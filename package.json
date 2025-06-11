@@ -1,0 +1,92 @@
+{
+  "name": "analizador-clustering-desktop",
+  "version": "1.0.0",
+  "description": "Aplicación de escritorio para análisis de clustering",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package-win": "electron-builder --win --x64",
+    "package-mac": "electron-builder --mac",
+    "package-linux": "electron-builder --linux",
+    "package-all": "electron-builder -mwl"
+  },
+  "keywords": [
+    "electron",
+    "python",
+    "flask",
+    "clustering"
+  ],
+  "author": "Tu Nombre <tu.email@example.com>",
+  "license": "ISC",
+  "dependencies": {
+    "analizador-clustering-desktop": "file:",
+    "python-shell": "^5.0.0",
+    "tcp-port-used": "^1.0.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^28.3.2",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.tuorganizacion.analizadorclustering",
+    "productName": "Analizador de Clustering",
+    "asar": true,
+    "files": [
+      "**/*",
+      "!node_modules/**/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/**/.bin",
+      "!**/*.{o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!{.eslintignore,.eslintrc.yml,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}",
+      "!{appveyor.yml,.travis.yml,circle.yml}",
+      "!{scripts,docs,test,spec,example,examples}",
+      "!**/node_modules/electron/**/*",
+      "!**/node_modules/electron-builder/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "./app.py",
+        "to": "app.py"
+      },
+      {
+        "from": "./static",
+        "to": "static"
+      },
+      {
+        "from": "./templates",
+        "to": "templates"
+      },
+      {
+        "from": "./.venv",
+        "to": ".venv"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns",
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build",
+      "category": "Utility"
+    },
+    "directories": {
+      "buildResources": "build",
+      "output": "dist_electron"
+    }
+  }
+}

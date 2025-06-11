@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Clustering</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Análisis de Clustering de Contaminantes del Aire</h1>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="fileUpload">Carga tu archivo Excel (.xls, .xlsx):</label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".xls,.xlsx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="algorithmSelect">Algoritmo de Clustering:</label>
+                <select id="algorithmSelect" name="algorithmSelect" required>
+                    <option value="">-- Selecciona un Algoritmo --</option>
+                    <option value="kmeans">K-Means</option>
+                    <option value="dbscan">DBSCAN</option>
+                    <option value="hierarchical">Jerárquico</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Analizar Datos</button>
+        </form>
+
+        <div id="loading" class="loading-message" style="display: none;">
+            <div class="spinner"></div>
+            Procesando, por favor espera...
+        </div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <div id="resultsArea" style="display: none;">
+            <h2>Resultados del Clustering</h2>
+
+            <div class="results-section" id="metricsSection">
+                <h3>Métricas del Clustering</h3>
+                <div id="metricsContent"></div>
+            </div>
+
+            <div class="results-section plot-section" id="plotElbow" style="display:none;">
+                <h3>Método del Codo (K-Means)</h3>
+                <img id="imgElbow" src="#" alt="Método del Codo">
+            </div>
+            
+            <div class="results-section plot-section" id="plotDbscanPca" style="display:none;">
+                <h3>DBSCAN sobre PCA</h3>
+                <img id="imgDbscanPca" src="#" alt="DBSCAN PCA">
+            </div>
+
+            <div class="results-section plot-section" id="plotPca" style="display:none;">
+                <h3>Clusters por PCA</h3>
+                <img id="imgPca" src="#" alt="Clusters PCA">
+            </div>
+
+            <div class="results-section plot-section" id="plotTsne" style="display:none;">
+                <h3>Clusters por t-SNE</h3>
+                <img id="imgTsne" src="#" alt="Clusters t-SNE">
+                <p id="tsneMessage" class="plot-message"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotUmap" style="display:none;">
+                <h3>Clusters por UMAP</h3>
+                <img id="imgUmap" src="#" alt="Clusters UMAP">
+                <p id="umapMessage" class="plot-message"></p>
+            </div>
+            
+            <div class="results-section plot-section" id="plotDendrogram" style="display:none;">
+                <h3>Dendrograma (Jerárquico)</h3>
+                <img id="imgDendrogram" src="#" alt="Dendrograma">
+                 <p id="dendrogramMessage" class="plot-message"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotDecisionTree" style="display:none;">
+                <h3>Árbol de Decisión Explicando Clusters</h3>
+                <img id="imgDecisionTree" src="#" alt="Árbol de Decisión">
+                <p id="decisionTreeMessage" class="plot-message"></p>
+            </div>
+        </div>
+
+        <!-- =========== SECCIÓN DE EXPLICACIÓN AÑADIDA AQUÍ =========== -->
+        <div class="results-section" id="explanationSection" style="margin-top: 40px;">
+            <h2>Comprendiendo los Resultados del Análisis</h2>
+            <p>
+                Esta herramienta utiliza algoritmos de <strong>clustering</strong> (o agrupamiento) para identificar 
+                patrones y grupos naturales dentro de los datos de contaminantes como PM10, PM2.5 y NO2. 
+                El objetivo es descubrir si existen perfiles de contaminación distintivos.
+            </p>
+    
+            <h4>¿Qué nos muestran los resultados?</h4>
+    
+            <p><strong>Métricas del Clustering:</strong></p>
+            <ul>
+                <li><strong>Número de Clusters:</strong> Indica cuántos grupos distintos ha identificado el algoritmo.</li>
+                <li><strong>Puntos de Ruido (si usa DBSCAN):</strong> El algoritmo DBSCAN puede identificar puntos que no pertenecen claramente a ningún grupo, considerándolos "ruido" o anomalías.</li>
+                <li><strong>Coeficiente de Silhouette:</strong> Mide qué tan bien agrupados están los puntos dentro de sus clusters en comparación con otros clusters. Un valor cercano a +1 indica clusters bien definidos y separados; valores cercanos a 0 sugieren clusters superpuestos.</li>
+                <li><strong>Otros Índices (Calinski-Harabasz, Davies-Bouldin):</strong> Son métricas adicionales que evalúan la calidad de la separación y cohesión de los clusters. Generalmente, valores más altos para Calinski-Harabasz y más bajos para Davies-Bouldin indican una mejor estructura de clustering.</li>
+            </ul>
+    
+            <p><strong>Visualizaciones de Clusters (PCA, t-SNE, UMAP):</strong></p>
+            <p>
+                Estas gráficas ayudan a "ver" los clusters en un espacio de dos dimensiones. Dado que analizamos múltiples contaminantes 
+                (un espacio multidimensional), estas técnicas de <strong>reducción de dimensionalidad</strong> proyectan los datos 
+                en un plano para observar visualmente cómo se agrupan los puntos. Cada punto en la gráfica representa una observación de datos, 
+                y los colores diferentes se utilizan para distinguir los clusters.
+            </p>
+    
+            <p><strong>Método del Codo (específico para K-Means):</strong></p>
+            <p>
+                Esta gráfica ayuda a determinar un número óptimo de clusters (k) para el algoritmo K-Means. Se busca un "codo" 
+                o punto de inflexión en la curva, donde añadir más clusters no proporciona una mejora significativa en la 
+                reducción del error.
+            </p>
+            
+            <p><strong>Dendrograma (específico para Clustering Jerárquico):</strong></p>
+            <p>
+                Este diagrama en forma de árbol ilustra cómo se agrupan jerárquicamente los puntos de datos. Las ramas más largas 
+                indican una mayor disimilitud entre los grupos que se unen. Se puede "cortar" el dendrograma a diferentes 
+                alturas para obtener un número específico de clusters.
+            </p>
+    
+            <p><strong>Árbol de Decisión Explicando los Clusters:</strong></p>
+            <p>
+                Una vez formados los clusters, se entrena un árbol de decisión para entender qué características 
+                (niveles de PM10, PM2.5, NO2) son las más importantes para definir cada cluster. Este árbol nos da reglas 
+                interpretables (ej. "Si PM2.5 es alto Y NO2 es bajo, entonces pertenece al Cluster X").
+            </p>
+    
+            <h4>Interpretación General:</h4>
+            <p>
+                Al analizar estas métricas y visualizaciones, buscamos entender si hay, por ejemplo, "clusters de alta 
+                contaminación generalizada", "clusters con predominancia de un contaminante específico", o "clusters de 
+                baja contaminación". Esta información puede ser valiosa para estudios ambientales y estrategias de mitigación.
+            </p>
+        </div>
+        <!-- =========== FIN DE LA SECCIÓN DE EXPLICACIÓN =========== -->
+
+    </div> <!-- Fin del .container principal -->
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

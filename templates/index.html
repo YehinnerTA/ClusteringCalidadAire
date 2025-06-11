@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Clustering</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Análisis de Clustering de Contaminantes del Aire</h1>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="fileUpload">Carga tu archivo Excel (.xls, .xlsx):</label>
+                <input type="file" id="fileUpload" name="fileUpload" accept=".xls,.xlsx" required>
+            </div>
+
+            <div class="form-group">
+                <label for="algorithmSelect">Algoritmo de Clustering:</label>
+                <select id="algorithmSelect" name="algorithmSelect" required>
+                    <option value="">-- Selecciona un Algoritmo --</option>
+                    <option value="kmeans">K-Means</option>
+                    <option value="dbscan">DBSCAN</option>
+                    <option value="hierarchical">Jerárquico</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Analizar Datos</button>
+        </form>
+
+        <div id="loading" class="loading-message" style="display: none;">
+            <div class="spinner"></div>
+            Procesando, por favor espera...
+        </div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <div id="resultsArea" style="display: none;">
+            <h2>Resultados del Clustering</h2>
+
+            <div class="results-section" id="metricsSection">
+                <h3>Métricas del Clustering</h3>
+                <div id="metricsContent"></div>
+            </div>
+
+            <div class="results-section plot-section" id="plotElbow" style="display:none;">
+                <h3>Método del Codo (K-Means)</h3>
+                <img id="imgElbow" src="#" alt="Método del Codo">
+                <p class="plot-explanation" id="explanationElbow"></p> 
+            </div>
+            
+            <div class="results-section plot-section" id="plotDbscanPca" style="display:none;">
+                <h3>DBSCAN sobre PCA</h3>
+                <img id="imgDbscanPca" src="#" alt="DBSCAN PCA">
+                <p class="plot-explanation" id="explanationDbscanPca"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotPca" style="display:none;">
+                <h3>Clusters por PCA</h3>
+                <img id="imgPca" src="#" alt="Clusters PCA">
+                <p class="plot-explanation" id="explanationPca"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotTsne" style="display:none;">
+                <h3>Clusters por t-SNE</h3>
+                <img id="imgTsne" src="#" alt="Clusters t-SNE">
+                <p class="plot-explanation" id="explanationTsne"></p>
+                <p id="tsneMessage" class="plot-message"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotUmap" style="display:none;">
+                <h3>Clusters por UMAP</h3>
+                <img id="imgUmap" src="#" alt="Clusters UMAP">
+                <p class="plot-explanation" id="explanationUmap"></p>
+                <p id="umapMessage" class="plot-message"></p>
+            </div>
+            
+            <div class="results-section plot-section" id="plotDendrogram" style="display:none;">
+                <h3>Dendrograma (Jerárquico)</h3>
+                <img id="imgDendrogram" src="#" alt="Dendrograma">
+                <p class="plot-explanation" id="explanationDendrogram"></p>
+                <p id="dendrogramMessage" class="plot-message"></p>
+            </div>
+
+            <div class="results-section plot-section" id="plotDecisionTree" style="display:none;">
+                <h3>Árbol de Decisión Explicando Clusters</h3>
+                <img id="imgDecisionTree" src="#" alt="Árbol de Decisión">
+                <p class="plot-explanation" id="explanationDecisionTree"></p>
+                <p id="decisionTreeMessage" class="plot-message"></p>
+            </div>
+        </div>
+
+    </div> <!-- Fin del .container principal -->
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
