@@ -20,21 +20,6 @@ from sklearn.manifold import TSNE
 import umap  # umap‑learn package
 from scipy.cluster.hierarchy import dendrogram, linkage  # For dendrograms
 
-# -----------------------------------------------------------------------------
-# Flask app initialisation
-# -----------------------------------------------------------------------------
-# When this file lives inside the `api/` folder (recommended for Vercel),
-# we need to reference the real paths of the "static" and "templates" folders
-# that live one level up, next to the project root.
-#
-#     ├─ api/
-#     │   └─ app.py   <-- this file
-#     ├─ static/
-#     └─ templates/
-#
-# The lines below calculate those absolute paths so the app works both
-# locally and once deployed as a serverless function on Vercel.
-# -----------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # …/project/api
 ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))  # …/project
 
@@ -45,10 +30,6 @@ app = Flask(
 )
 CORS(app)
 
-# -----------------------------------------------------------------------------
-# Helper utilities
-# -----------------------------------------------------------------------------
-
 def fig_to_base64(fig):
     """Convert a Matplotlib figure to a base64‑encoded PNG string."""
     buf = io.BytesIO()
@@ -57,13 +38,8 @@ def fig_to_base64(fig):
     buf.seek(0)
     return base64.b64encode(buf.read()).decode()
 
-# Global list of numerical features expected in every uploaded file
 FEATURE_COLUMNS = ["PM10", "PM2_5", "NO2"]
 
-# -----------------------------------------------------------------------------
-# Route: /analyze – main entry point used by the front‑end to upload a file and
-# receive the clustering results.
-# -----------------------------------------------------------------------------
 @app.route("/analyze", methods=["POST"])
 def analyze_data():
     if "fileUpload" not in request.files:
@@ -77,9 +53,6 @@ def analyze_data():
         return jsonify({"error": "No algorithm selected"}), 400
 
     try:
-        # ------------------------------------------------------------------
-        # 1. Read Excel file (openpyxl engine if .xlsx)
-        # ------------------------------------------------------------------
         df = pd.read_excel(
             file,
             engine="openpyxl" if file.filename.lower().endswith(".xlsx") else None,
@@ -97,9 +70,6 @@ def analyze_data():
                 400,
             )
 
-        # ------------------------------------------------------------------
-        # 2. Basic preprocessing – select columns, drop NaNs
-        # ------------------------------------------------------------------
         data = df[FEATURE_COLUMNS].copy().dropna()
         if data.empty:
             return (
@@ -123,9 +93,6 @@ def analyze_data():
         results = {"metrics": {}, "plots": {}}
         clusters = None
 
-        # ------------------------------------------------------------------
-        # 3. Dimensionality reduction (PCA) for plotting convenience
-        # ------------------------------------------------------------------
         n_pca_components = min(2, X_scaled.shape[1], X_scaled.shape[0])
         if n_pca_components < 1:
             return jsonify({"error": "Not enough data for PCA"}), 400
@@ -143,11 +110,7 @@ def analyze_data():
                 400,
             )
 
-        # ------------------------------------------------------------------
-        # 4. Choose clustering algorithm
-        # ------------------------------------------------------------------
         if algorithm == "kmeans":
-            # -------------------- K‑Means --------------------
             max_k = min(10, X_scaled.shape[0] - 1) or 1
             sse = []
             for k in range(1, max_k + 1):
@@ -181,7 +144,6 @@ def analyze_data():
             results["metrics"]["num_clusters"] = optimal_k
 
         elif algorithm == "dbscan":
-            # -------------------- DBSCAN --------------------
             eps_val = 0.8
             min_samples_val = min(10, X_scaled.shape[0] - 1) or 1
             dbscan = DBSCAN(eps=eps_val, min_samples=min_samples_val).fit(X_scaled)
@@ -211,7 +173,6 @@ def analyze_data():
             results["plots"]["dbscan_pca"] = fig_to_base64(fig_db_pca)
 
         elif algorithm == "hierarchical":
-            # -------------------- Agglomerative Clustering --------------------
             n_clusters_h = min(3, X_scaled.shape[0]) or 1
             ag = AgglomerativeClustering(n_clusters=n_clusters_h).fit(X_scaled)
             clusters = ag.labels_
@@ -238,9 +199,6 @@ def analyze_data():
         else:
             return jsonify({"error": "Algoritmo no implementado"}), 400
 
-        # ------------------------------------------------------------------
-        # 5. Common visualisations (Decision tree, PCA, t‑SNE, UMAP)
-        # ------------------------------------------------------------------
         if clusters is not None:
             # Decision tree (skip if only noise / single cluster)
             non_noise_mask = clusters != -1 if -1 in clusters else np.ones_like(clusters, dtype=bool)
@@ -307,9 +265,6 @@ def analyze_data():
 
         return jsonify(results)
 
-    # ----------------------------------------------------------------------
-    # Error handling
-    # ----------------------------------------------------------------------
     except MemoryError as e_mem:
         return (
             jsonify({"error": f"Error de memoria: {str(e_mem)}"}),
@@ -326,18 +281,12 @@ def analyze_data():
             500,
         )
 
-# -----------------------------------------------------------------------------
-# Front page – renders templates/index.html
-# -----------------------------------------------------------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# -----------------------------------------------------------------------------
-# Local development runner (ignored by Vercel – it just imports `app`)
-# -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    # Ensure directories exist when running locally
     os.makedirs(os.path.join(ROOT_DIR, "templates"), exist_ok=True)
     os.makedirs(os.path.join(ROOT_DIR, "static"), exist_ok=True)
     app.run(debug=True, host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
