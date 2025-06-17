@@ -9,3 +9,4 @@ scikit-learn>=1.5
 umap-learn>=0.5
 scipy>=1.13
 openpyxl>=3.1     # para leer archivos .xlsx en pandas
+gunicorn>=21.2
