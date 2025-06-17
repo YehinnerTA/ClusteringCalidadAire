@@ -30,16 +30,16 @@ Aplicación web que permite visualizar el agrupamiento de zonas según la calida
 Puedes ejecutar la aplicación en tu computadora local siguiendo estos pasos:
 
 ```bash
-1. Clonar el repositorio
+# 1. Clonar el repositorio
 git clone https://github.com/tu-usuario/yehinnerta-clusteringcalidadaire.git
 cd yehinnerta-clusteringcalidadaire
 
-2. Crear entorno virtual
+# 2. Crear entorno virtual
 python -m venv venv
 source venv/bin/activate  # En Windows: venv\Scripts\activate
 
-3. Instalar dependencias
+# 3. Instalar dependencias
 pip install -r requirements.txt
 
-4. Ejecutar
+# 4. Ejecutar
 python app.py
