@@ -43,7 +43,7 @@ Puedes ejecutar la aplicación en tu computadora local siguiendo estos pasos:
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/tu-usuario/yehinnerta-clusteringcalidadaire.git
-cd yehinnerta-clusteringcalidadaire
+cd clusteringcalidadaire
 
 # 2. Crear entorno virtual
 python -m venv venv
