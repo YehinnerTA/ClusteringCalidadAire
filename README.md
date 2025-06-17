@@ -1,12 +1,25 @@
 # Clustering de la Calidad del Aire en Lima Metropolitana
 ---
+
 <p align="center">
-  [![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)](https://www.python.org/)
-  [![Flask](https://img.shields.io/badge/Flask-web%20framework-black?logo=flask)](https://flask.palletsprojects.com/)
-  [![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript)](https://developer.mozilla.org/docs/Web/JavaScript)
-  [![HTML](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
-  [![CSS](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
-  [![Render](https://img.shields.io/badge/Render-Deployed-5D3FD3?logo=render)](https://render.com/)
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/Python-3.10-blue?logo=python" alt="Python">
+  </a>
+  <a href="https://flask.palletsprojects.com/">
+    <img src="https://img.shields.io/badge/Flask-web%20framework-black?logo=flask" alt="Flask">
+  </a>
+  <a href="https://developer.mozilla.org/docs/Web/JavaScript">
+    <img src="https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript" alt="JavaScript">
+  </a>
+  <a href="https://developer.mozilla.org/docs/Web/HTML">
+    <img src="https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white" alt="HTML">
+  </a>
+  <a href="https://developer.mozilla.org/docs/Web/CSS">
+    <img src="https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white" alt="CSS">
+  </a>
+  <a href="https://render.com/">
+    <img src="https://img.shields.io/badge/Render-Deployed-5D3FD3?logo=render" alt="Render">
+  </a>
 </p>
 
 Aplicación web que permite visualizar el agrupamiento de zonas según la calidad del aire en Lima Metropolitana, utilizando algoritmos de clustering sobre datos abiertos del SENAMHI.
